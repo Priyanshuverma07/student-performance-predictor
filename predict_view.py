@@ -3,21 +3,28 @@ import os
 import pandas as pd
 import streamlit as st
 from datetime import datetime
-from reportlab.lib import colors
-from reportlab.lib.enums import TA_CENTER
-from reportlab.lib.pagesizes import letter
-from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
-from reportlab.lib.units import inch
-from reportlab.platypus import Image, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
-from reportlab.graphics.shapes import Drawing, Rect, String, Circle
-from reportlab.graphics.charts.piecharts import Pie
-from reportlab.graphics.charts.lineplots import LinePlot
-from reportlab.graphics.barcode import qr
+_HAS_REPORTLAB = True
+try:
+    from reportlab.lib import colors
+    from reportlab.lib.enums import TA_CENTER
+    from reportlab.lib.pagesizes import letter
+    from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+    from reportlab.lib.units import inch
+    from reportlab.platypus import Image, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
+    from reportlab.graphics.shapes import Drawing, Rect, String, Circle
+    from reportlab.graphics.charts.piecharts import Pie
+    from reportlab.graphics.charts.lineplots import LinePlot
+    from reportlab.graphics.barcode import qr
+except Exception:
+    _HAS_REPORTLAB = False
 
 from common import save_history_entry
 
 
 def generate_pdf_report(student_info):
+    if not _HAS_REPORTLAB:
+        raise RuntimeError("PDF generation requires the 'reportlab' package. Install it or remove PDF download.")
+
     buffer = io.BytesIO()
     doc = SimpleDocTemplate(
         buffer,
